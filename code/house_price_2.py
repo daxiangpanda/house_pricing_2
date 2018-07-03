@@ -1,3 +1,18 @@
+# This Python 3 environment comes with many helpful analytics libraries installed
+# It is defined by the kaggle/python docker image: https://github.com/kaggle/docker-python
+# For example, here's several helpful packages to load in 
+
+# import numpy as np # linear algebra
+# import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+
+# # Input data files are available in the "../input/" directory.
+# # For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory
+
+# import os
+# print(os.listdir("../input"))
+
+# Any results you write to the current directory are saved as output.
+
 from __future__ import print_function
 
 import math
@@ -11,34 +26,30 @@ import pandas as pd
 from sklearn import metrics
 import tensorflow as tf
 from tensorflow.python.data import Dataset
-
+import time
 tf.logging.set_verbosity(tf.logging.ERROR)
 pd.options.display.max_rows = 10
 pd.options.display.float_format = '{:.1f}'.format
 
-train_housing_dataframe = pd.read_csv("/Users/liuxinzhong/Desktop/house_price_2/all/train.csv", sep=",")
+train_housing_dataframe = pd.read_csv("../input/train.csv", sep=",")
 # train_housing_dataframe.fillna(value=0)
 
 def preprocess_features(train_housing_dataframe):
     digit_column_names = []
-    # selected_features = train_housing_dataframe[['MSSubClass', 'LotFrontage', 'LotArea', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'MasVnrArea','BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath', 'BedroomAbvGr', 'KitchenAbvGr', 'TotRmsAbvGrd', 'Fireplaces', 'GarageYrBlt', 'GarageCars', 'GarageArea', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'MiscVal', 'MoSold', 'YrSold']]
-    selected_features = train_housing_dataframe[['MSSubClass', 'LotFrontage']]
+    selected_features = train_housing_dataframe[['MSSubClass', 'LotFrontage', 'LotArea', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'MasVnrArea','BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF', '1stFlrSF', '2ndFlrSF', 'LowQualFinSF', 'GrLivArea', 'BsmtFullBath', 'BsmtHalfBath', 'FullBath', 'HalfBath', 'BedroomAbvGr', 'KitchenAbvGr', 'TotRmsAbvGrd', 'Fireplaces', 'GarageYrBlt', 'GarageCars', 'GarageArea', 'WoodDeckSF', 'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch', 'PoolArea', 'MiscVal', 'MoSold', 'YrSold']]
+    # selected_features = train_housing_dataframe[['MSSubClass', 'LotFrontage']]
 
     processed_features = selected_features.copy()
     # processed_features.fillna(np.float(0.0))
     # print(processed_features)
     # print(processed_features.iloc[0,0])
-    print(processed_features.columns.size)
-    print(processed_features.iloc[0].size)
+    # print(processed_features.columns.size)
+    # print(processed_features.iloc[0].size)
     for i in range(processed_features.columns.size):
         for j in range(processed_features.shape[0]):
-            # print(3333)
-            # print(processed_features.iloc[i,j])
-            print(processed_features.iloc[j,i].dtype)
-            print(processed_features.iloc[j,i])
             if(np.isnan(processed_features.iloc[j,i])):
                 processed_features.iloc[j,i] = np.float(0.0)
-    processed_features.to_csv("/Users/liuxinzhong/Desktop/house_price_2/all/train_1.csv")
+    # processed_features.to_csv("/Users/liuxinzhong/Desktop/house_price_2/all/train_1.csv")
     return processed_features
 
 def preprocess_targets(train_housing_dataframe):
@@ -124,7 +135,7 @@ def train_model(
         validation_root_mean_squared_error = math.sqrt(
             metrics.mean_squared_error(validation_predictions, validation_targets))
             # Occasionally print the current loss.
-        print("  period %02d : %0.2f" % (period, training_root_mean_squared_error))
+        print("  period %02d : %0.2f____time:%s" % (period, training_root_mean_squared_error,time.localtime(time.time())))
         # Add the loss metrics from this period to our list.
         training_rmse.append(training_root_mean_squared_error)
         validation_rmse.append(validation_root_mean_squared_error)
@@ -145,12 +156,13 @@ def main():
     validation_targets.describe()
 
     linear_regressor = train_model(
-        learning_rate=0.3,
-        steps=500,
-        batch_size=5,
+        learning_rate=0.0005,
+        steps=1000,
+        batch_size=50,
         training_examples=training_examples,
         training_targets=training_targets,
         validation_examples=validation_examples,
         validation_targets=validation_targets)
+    linear_re
 if __name__ == "__main__":
     main()
