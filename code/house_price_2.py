@@ -26,7 +26,11 @@ import pandas as pd
 from sklearn import metrics
 import tensorflow as tf
 from tensorflow.python.data import Dataset
+
 import time
+import os
+
+
 tf.logging.set_verbosity(tf.logging.ERROR)
 pd.options.display.max_rows = 10
 pd.options.display.float_format = '{:.1f}'.format
@@ -142,8 +146,9 @@ def train_model(
     return linear_regressor
 
 def main():
-    train_housing_dataframe = pd.read_csv("../input/train.csv", sep=",")
-    test_housing_dataframe = pd.read_csv("../input/test.csv",sep=",")
+    parentPath = os.path.abspath('.')
+    train_housing_dataframe = pd.read_csv(parentPath + "/input/train.csv", sep=",")
+    test_housing_dataframe = pd.read_csv(parentPath + "/input/test.csv",sep=",")
     training_examples = preprocess_features(train_housing_dataframe.head(1200))
     training_examples.describe()
 
@@ -166,7 +171,7 @@ def main():
         validation_targets=validation_targets)
     
     test_examples = preprocess_features(test_housing_dataframe)
-    test_targets = preprocess_targers(test_housing_dataframe)
+    test_targets = preprocess_targets(test_housing_dataframe)
     
     predict_input_fn = lambda:my_input_fn(
             test_examples,
