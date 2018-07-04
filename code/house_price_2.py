@@ -31,7 +31,6 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 pd.options.display.max_rows = 10
 pd.options.display.float_format = '{:.1f}'.format
 
-train_housing_dataframe = pd.read_csv("../input/train.csv", sep=",")
 # train_housing_dataframe.fillna(value=0)
 
 def preprocess_features(train_housing_dataframe):
@@ -143,6 +142,8 @@ def train_model(
     return linear_regressor
 
 def main():
+    train_housing_dataframe = pd.read_csv("../input/train.csv", sep=",")
+    test_housing_dataframe = pd.read_csv("../input/test.csv",sep=",")
     training_examples = preprocess_features(train_housing_dataframe.head(1200))
     training_examples.describe()
 
@@ -163,6 +164,20 @@ def main():
         training_targets=training_targets,
         validation_examples=validation_examples,
         validation_targets=validation_targets)
-    linear_re
+    
+    test_examples = preprocess_features(test_housing_dataframe)
+    test_targets = preprocess_targers(test_housing_dataframe)
+    
+    predict_input_fn = lambda:my_input_fn(
+            test_examples,
+            test_targets["SalePrice"],
+            num_epochs=1,
+            shuffle=False
+        )
+    test_predictions = linear_regressor.predict(input_fn=predict_input_fn)
+    test_predictions = np.array([item['predictions'][0] for item in test_predictions])
+    
+    root_mean_squared_error = math.sqrt(metrics.mean_squared_error(test_predictions,test_targets))
+    print("Final RMSE (on test data): %0.2f" % root_mean_squared_error)
 if __name__ == "__main__":
     main()
